@@ -10,6 +10,7 @@ struct edge {
   edge(int s, int d, weight_type w_) : u(s), v(d), w(w_) {}
 };
 
+// POJ 3259 Wormholes
 template <typename Edge>
 pair<vector<typename Edge::weight_type>, bool>
 bellman_ford(const vector<Edge>& g,/*{{{*/
