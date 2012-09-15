@@ -3,6 +3,47 @@
 #include <limits>
 using namespace std;
 
+struct edge {
+  int u, v;
+  typedef int weight_type;
+  weight_type w;
+  edge(int s, int d, weight_type w_) : u(s), v(d), w(w_) {}
+};
+
+template <typename Edge>
+pair<vector<typename Edge::weight_type>, bool>
+bellman_ford(const vector<Edge>& g,/*{{{*/
+    typename vector<Edge>::size_type N,
+    typename vector<Edge>::size_type start,
+    typename Edge::weight_type inf = 1000000)
+{
+  /* Edge must have
+   * - u (source node)
+   * - v (dest node)
+   * - w (weight)
+   * - weight_type
+   */
+  typedef typename vector<Edge>::size_type size_type;
+  typedef typename Edge::weight_type weight_type;
+  vector<weight_type> dist(N, inf);
+  dist[start] = 0;
+
+  for (size_type i = 0; i < N; i++) {
+    for (typename vector<Edge>::const_iterator it(g.begin()); it != g.end(); ++it) {
+      if (dist[it->u] + it->w < dist[it->v]) {
+        dist[it->v] = dist[it->u] + it->w;
+      }
+    }
+  }
+
+  for (typename vector<Edge>::const_iterator it(g.begin()); it != g.end(); ++it) {
+    if (dist[it->u] + it->w < dist[it->v]) {
+      return make_pair(dist, false);
+    }
+  }
+  return make_pair(dist, true);
+}/*}}}*/
+
 // O(E^2 V)
 template <typename T>
 T edmonds_karp(const vector<vector<T> >& capacity, int source, int sink)/*{{{*/
