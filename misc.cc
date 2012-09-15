@@ -86,14 +86,15 @@ struct BinaryIndexedTree/*{{{*/
 };/*}}}*/
 
 // POJ 3264 Balanced Lineup
+// AOJ 2431 House Moving
 template <class Compare>
 struct SegmentTree/*{{{*/
 {
-  const vector<int>& cows;
+  vector<int>& mem;
   vector<int> indexes;
   Compare cmp;
-  SegmentTree(const vector<int>& cs)
-    : cows(cs), indexes(4*cs.size(), -1)
+  SegmentTree(vector<int>& cs)
+    : mem(cs), indexes(4*cs.size(), -1)
   {
     build(0, 0, cs.size());
   }
@@ -107,7 +108,7 @@ struct SegmentTree/*{{{*/
       build(2*idx+1, left, mid);
       build(2*idx+2, mid, right);
       // minimum in [left, right)
-      if (cmp(cows[indexes[2*idx+1]], cows[indexes[2*idx+2]])) {
+      if (cmp(mem[indexes[2*idx+1]], mem[indexes[2*idx+2]])) {
         indexes[idx] = indexes[2*idx+1];
       } else {
         indexes[idx] = indexes[2*idx+2];
@@ -115,9 +116,9 @@ struct SegmentTree/*{{{*/
     }
   }
 
-  inline int query_value(int left, int right) const { return cows[query_index(left, right)]; }
+  inline int query_value(int left, int right) const { return mem[query_index(left, right)]; }
 
-  inline int query_index(int left, int right) const { return query_index(left, right, 0, 0, cows.size()); }
+  inline int query_index(int left, int right) const { return query_index(left, right, 0, 0, mem.size()); }
 
   int query_index(int left, int right, int i, int a, int b) const
   {
@@ -137,7 +138,7 @@ struct SegmentTree/*{{{*/
       } else if (r == -1) {
         return l;
       } else {
-        if (cmp(cows[l], cows[r])) {
+        if (cmp(mem[l], mem[r])) {
           return l;
         } else {
           return r;
@@ -145,6 +146,32 @@ struct SegmentTree/*{{{*/
       }
     }
   }
+
+  void update(int idx, int val)
+  {
+    mem[idx] = val;
+    update_index(0, mem.size(), 0, idx);
+  }
+
+  void update_index(int left, int right, int i, int idx)
+  {
+    if (left+1 == right) {
+      //indexes[i] = idx;
+    } else {
+      const int mid = (left+right)/2;
+      if (idx < mid) {
+        update_index(left, mid, 2*i+1, idx);
+      } else {
+        update_index(mid, right, 2*i+2, idx);
+      }
+      if (cmp(mem[indexes[2*i+1]], mem[indexes[2*i+2]])) {
+        indexes[i] = indexes[2*i+1];
+      } else {
+        indexes[i] = indexes[2*i+2];
+      }
+    }
+  }
+
 };/*}}}*/
 
 // honeycomb {{{
