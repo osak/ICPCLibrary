@@ -87,13 +87,13 @@ struct BinaryIndexedTree/*{{{*/
 
 // POJ 3264 Balanced Lineup
 // AOJ 2431 House Moving
-template <class Compare>
+template <class T, class Compare>
 struct SegmentTree/*{{{*/
 {
-  vector<int>& mem;
+  vector<T>& mem;
   vector<int> indexes;
   Compare cmp;
-  SegmentTree(vector<int>& cs)
+  SegmentTree(vector<T>& cs)
     : mem(cs), indexes(4*cs.size(), -1)
   {
     build(0, 0, cs.size());
@@ -116,7 +116,7 @@ struct SegmentTree/*{{{*/
     }
   }
 
-  inline int query_value(int left, int right) const { return mem[query_index(left, right)]; }
+  inline T query_value(int left, int right) const { return mem[query_index(left, right)]; }
 
   inline int query_index(int left, int right) const { return query_index(left, right, 0, 0, mem.size()); }
 
@@ -147,7 +147,7 @@ struct SegmentTree/*{{{*/
     }
   }
 
-  void update(int idx, int val)
+  void update(int idx, T val)
   {
     mem[idx] = val;
     update_index(0, mem.size(), 0, idx);
