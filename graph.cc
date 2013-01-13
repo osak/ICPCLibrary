@@ -357,23 +357,23 @@ pair<vector<int>,int> strongly_connected_components(const vector<vector<int> >& 
 // minimum cost flow
 // returns (cost, flow)
 // POJ 2195
-struct node/*{{{*/
+struct Edge/*{{{*/
 {
   int index;
   int capacity;
   int cost;
-  node(int i, int c, int d) : index(i), capacity(c), cost(d) {}
+  Edge(int i, int c, int d) : index(i), capacity(c), cost(d) {}
 };/*}}}*/
 
 // O(V^2 U C) where
 //  U = sum of capacity
 //  C = sum of cost
-pair<int,int> primal_dual(const vector<vector<node> >& g, int source, int sink)/*{{{*/
+pair<int,int> primal_dual(const vector<vector<Edge> >& g, int source, int sink)/*{{{*/
 {
   const int N = g.size();
   vector<vector<int> > capacity(N, vector<int>(N, 0)), cost(N, vector<int>(N, 0)), flow(N, vector<int>(N, 0));
   for (int i = 0; i < N; i++) {
-    for (vector<node>::const_iterator it(g[i].begin()); it != g[i].end(); ++it) {
+    for (vector<Edge>::const_iterator it(g[i].begin()); it != g[i].end(); ++it) {
       capacity[i][it->index] += it->capacity;
       cost[i][it->index] += it->cost;
     }
@@ -390,7 +390,7 @@ pair<int,int> primal_dual(const vector<vector<node> >& g, int source, int sink)/
       const int n = q.top().second;
       const int c = -q.top().first;
       q.pop();
-      for (vector<node>::const_iterator it(g[n].begin()); it != g[n].end(); ++it) {
+      for (vector<Edge>::const_iterator it(g[n].begin()); it != g[n].end(); ++it) {
         if (capacity[n][it->index] - flow[n][it->index] > 0) {
           const int c2 = c + cost[n][it->index] + h[n] - h[it->index];
           if (c2 < dist[it->index]) {
