@@ -174,6 +174,66 @@ struct SegmentTree/*{{{*/
 
 };/*}}}*/
 
+// AOJ 2331 A Way to Inveite Friends
+// POJ 2777 Count Color
+// 更新も O(log N) で可能な SegmentTree．
+template <class T>
+struct SegmentTree/*{{{*/
+{
+    vector<T> nodes;
+    SegmentTree(int size) {
+        nodes.resize(size*4, 0);
+    }
+
+    void maintain_consistency(int pos) {
+        // ノードの値が子の合計と一致しない場合，不完全な更新が行なわれているため
+        // 下のノードに伝搬させる．
+        int children_sum = nodes[pos*2+1] + nodes[pos*2+2];
+        if(children_sum != nodes[pos]) { 
+            //cout << "maintain: " << pos << ' ' << nodes[pos] << ' ' << children_sum << endl;
+            int diff = nodes[pos] - children_sum;
+            nodes[pos*2+1] += diff/2;
+            nodes[pos*2+2] += diff/2;
+        }
+    }
+
+    // [left, right) に対するクエリ．
+    // 現在のノードはpos で， [pl, pr) を表わしている．
+    T get_inner(int left, int right, int pos, int pl, int pr) {
+        //cout << left << ' ' << right << ' ' << pos << ' ' <<  pl << ' ' << pr << endl;
+        if(pr <= left || right <= pl) return 0; // 交差しない
+        if(left <= pl && pr <= right) return nodes[pos]; // 完全に含まれる
+
+        maintain_consistency(pos);
+
+        const int center = (pl+pr) / 2;
+        T lv = get_inner(left, right, pos*2+1, pl, center);
+        T rv = get_inner(left, right, pos*2+2, center, pr);
+        return lv + rv;
+    }
+
+    T get(int left, int right) {
+        return get_inner(left, right, 0, 0, nodes.size()/2);
+    }
+
+    T add_inner(int left, int right, int pos, int pl, int pr) {
+        //cout << left << ' ' << right << ' ' << pos << ' ' <<  pl << ' ' << pr << endl;
+        if(pr <= left || right <= pl) return nodes[pos]; // 交差しない
+        if(left <= pl && pr <= right) return nodes[pos] += pr-pl; // 完全に含まれる
+
+        maintain_consistency(pos);
+
+        const int center = (pl+pr)/2;
+        T lv = add_inner(left, right, pos*2+1, pl, center);
+        T rv = add_inner(left, right, pos*2+2, center, pr);
+        return nodes[pos] = lv+rv;
+    }
+
+    T add(int left, int right) {
+        return add_inner(left, right, 0, 0, nodes.size()/2);
+    }
+};/*}}}*/
+
 // honeycomb {{{
 /*
  * 0:  a a a a a a a a
