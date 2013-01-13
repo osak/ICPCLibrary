@@ -1,0 +1,59 @@
+\documentclass[a4paper,twocolumn,landscape]{jsarticle}
+\usepackage{listings,jlisting}
+\usepackage{fancyhdr}
+
+% Size adjustment {{{
+\setlength{\hoffset}{-1in}
+\addtolength{\hoffset}{10pt}
+\setlength{\voffset}{-1in}
+
+\setlength{\oddsidemargin}{0pt}
+\setlength{\evensidemargin}{0pt}
+\setlength{\topmargin}{0pt}
+\setlength{\headheight}{20pt}
+\setlength{\headsep}{0pt}
+\setlength{\footskip}{0pt}
+\setlength{\textheight}{\paperheight}
+\addtolength{\textheight}{-20pt}
+\addtolength{\textheight}{-\headheight}
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-10pt}
+\addtolength{\textwidth}{-10pt}
+\setlength{\marginparsep}{0pt}
+\setlength{\marginparwidth}{0pt}
+\setlength{\marginparpush}{0pt}
+
+\setlength{\columnsep}{10pt}
+\setlength{\columnseprule}{0.1pt}
+% }}}
+% Header settings {{{
+% See http://icpc.baylor.edu/ICPCWiki/Wiki.jsp?page=On-Site%20Registration
+\pagestyle{fancy}
+\lhead{Tokyo Institute of Technology}{}
+\rhead{\thepage}{}
+\cfoot{}{}
+\renewcommand{\headrulewidth}{0.1pt}
+\renewcommand{\footrulewidth}{0pt}
+% }}}
+% listings {{{
+\lstset{
+  language=C,
+  numberstyle=\ttfamily,
+  breaklines=true,
+  basicstyle=\ttfamily,
+  commentstyle=\ttfamily,
+  basewidth=0.50em,
+  float=h,
+}
+% }}}
+
+\begin{document}
+
+\lstinputlisting{geo.cc}
+\lstinputlisting{graph.cc}
+\lstinputlisting{math.cc}
+\lstinputlisting{misc.cc}
+
+\end{document}
+
+% vim: foldmethod=marker foldenable
