@@ -176,33 +176,34 @@ struct SegmentTree/*{{{*/
 
 // AOJ 2331 A Way to Inveite Friends
 // POJ 2777 Count Color
+// COCI 2012/2013 #6 Burek
 // 更新も O(log N) で可能な SegmentTree．
 template <class T>
 struct SegmentTree/*{{{*/
 {
-    vector<T> nodes;
-    SegmentTree(int size) {
+    vector<T> nodes, stocks;
+    int size;
+    SegmentTree(int size) : size(size) {
         nodes.resize(size*4, 0);
+        stocks.resize(size*4, 0);
     }
 
     void maintain_consistency(int pos) {
-        // ノードの値が子の合計と一致しない場合，不完全な更新が行なわれているため
-        // 下のノードに伝搬させる．
-        int children_sum = nodes[pos*2+1] + nodes[pos*2+2];
-        if(children_sum != nodes[pos]) { 
-            //cout << "maintain: " << pos << ' ' << nodes[pos] << ' ' << children_sum << endl;
-            int diff = nodes[pos] - children_sum;
-            nodes[pos*2+1] += diff/2;
-            nodes[pos*2+2] += diff/2;
+        if(stocks[pos] > 0) {
+            // CAUTION: These expressions depend on following constraint:
+            //  size = 2 ** N
+            if(pos*2+1 < stocks.size()) stocks[pos*2+1] += stocks[pos] / 2;
+            if(pos*2+2 < stocks.size()) stocks[pos*2+2] += stocks[pos] / 2;
+            nodes[pos] += stocks[pos];
+            stocks[pos] = 0;
         }
     }
 
     // [left, right) に対するクエリ．
     // 現在のノードはpos で， [pl, pr) を表わしている．
     T get_inner(int left, int right, int pos, int pl, int pr) {
-        //cout << left << ' ' << right << ' ' << pos << ' ' <<  pl << ' ' << pr << endl;
         if(pr <= left || right <= pl) return 0; // 交差しない
-        if(left <= pl && pr <= right) return nodes[pos]; // 完全に含まれる
+        if(left <= pl && pr <= right) return nodes[pos] + stocks[pos]; // 完全に含まれる
 
         maintain_consistency(pos);
 
@@ -213,13 +214,19 @@ struct SegmentTree/*{{{*/
     }
 
     T get(int left, int right) {
-        return get_inner(left, right, 0, 0, nodes.size()/2);
+        return get_inner(left, right, 0, 0, size);
     }
 
     T add_inner(int left, int right, int pos, int pl, int pr) {
-        //cout << left << ' ' << right << ' ' << pos << ' ' <<  pl << ' ' << pr << endl;
-        if(pr <= left || right <= pl) return nodes[pos]; // 交差しない
-        if(left <= pl && pr <= right) return nodes[pos] += pr-pl; // 完全に含まれる
+        if(pr <= left || right <= pl) { // 交差しない
+            if(pos < nodes.size()) return 0;
+            else return stocks[pos] + nodes[pos];
+        }
+        if(left <= pl && pr <= right) {
+            //cout << "tail: " << pl << ' ' << pr << endl;
+            stocks[pos] += pr-pl;
+            return stocks[pos] + nodes[pos]; // 完全に含まれる
+        }
 
         maintain_consistency(pos);
 
@@ -229,8 +236,9 @@ struct SegmentTree/*{{{*/
         return nodes[pos] = lv+rv;
     }
 
+    // Update range [left, right) in O(log N).
     T add(int left, int right) {
-        return add_inner(left, right, 0, 0, nodes.size()/2);
+        return add_inner(left, right, 0, 0, size);
     }
 };/*}}}*/
 
