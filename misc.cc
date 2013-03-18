@@ -177,6 +177,7 @@ struct SegmentTree/*{{{*/
 // AOJ 2331 A Way to Inveite Friends
 // POJ 2777 Count Color
 // COCI 2012/2013 #6 Burek
+// Codeforces #174(Div.1)A Cows and Sequence
 // 更新も O(log N) で可能な SegmentTree．
 template <class T>
 struct SegmentTree/*{{{*/
@@ -188,8 +189,8 @@ struct SegmentTree/*{{{*/
         stocks.resize(size*4, 0);
     }
 
-    void maintain_consistency(int pos) {
-        if(stocks[pos] > 0) {
+    void maintain_consistency(size_t pos) {
+        if(stocks[pos] != 0) {
             // CAUTION: These expressions depend on following constraint:
             //  size = 2 ** N
             if(pos*2+1 < stocks.size()) stocks[pos*2+1] += stocks[pos] / 2;
@@ -201,7 +202,7 @@ struct SegmentTree/*{{{*/
 
     // [left, right) に対するクエリ．
     // 現在のノードはpos で， [pl, pr) を表わしている．
-    T get_inner(int left, int right, int pos, int pl, int pr) {
+    T get_inner(int left, int right, size_t pos, int pl, int pr) {
         if(pr <= left || right <= pl) return 0; // 交差しない
         if(left <= pl && pr <= right) return nodes[pos] + stocks[pos]; // 完全に含まれる
 
@@ -217,28 +218,27 @@ struct SegmentTree/*{{{*/
         return get_inner(left, right, 0, 0, size);
     }
 
-    T add_inner(int left, int right, int pos, int pl, int pr) {
+    T add_inner(int left, int right, size_t pos, int pl, int pr, T val) {
         if(pr <= left || right <= pl) { // 交差しない
-            if(pos < nodes.size()) return 0;
+            if(pos >= nodes.size()) return 0;
             else return stocks[pos] + nodes[pos];
         }
         if(left <= pl && pr <= right) {
-            //cout << "tail: " << pl << ' ' << pr << endl;
-            stocks[pos] += pr-pl;
+            stocks[pos] += (pr-pl) * val;
             return stocks[pos] + nodes[pos]; // 完全に含まれる
         }
 
         maintain_consistency(pos);
 
         const int center = (pl+pr)/2;
-        T lv = add_inner(left, right, pos*2+1, pl, center);
-        T rv = add_inner(left, right, pos*2+2, center, pr);
+        T lv = add_inner(left, right, pos*2+1, pl, center, val);
+        T rv = add_inner(left, right, pos*2+2, center, pr, val);
         return nodes[pos] = lv+rv;
     }
 
     // Update range [left, right) in O(log N).
-    T add(int left, int right) {
-        return add_inner(left, right, 0, 0, size);
+    T add(int left, int right, T val) {
+        return add_inner(left, right, 0, 0, size, val);
     }
 };/*}}}*/
 
