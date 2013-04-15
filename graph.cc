@@ -354,9 +354,32 @@ pair<vector<int>,int> strongly_connected_components(const vector<vector<int> >& 
   return make_pair(scc_map, scc_size);
 }/*}}}*/
 
+/* 2-SAT
+ * i 番目の正のリテラルは i<<1、負のリテラルは (i<<1)|1 で表現する。
+ * リテラルの否定は 1 と XOR をとるだけ。
+ *
+ * (A /\ B) == (!A -> A) /\ (!B -> B)
+ * (A \/ B) == (!A -> B) /\ (!B -> A)
+ *
+ * POJ 3678 Katu Puzzle
+ * AOJ 2504 Statement Coverage
+ */
+bool two_sat(const vector<vector<int> >& g)/*{{{*/
+{
+  const int N = g.size()/2;
+  const pair<vector<int>,int> p = strongly_connected_components(g);
+  const vector<int>& scc_map = p.first;
+  for (int i = 0; i < N; i++) {
+    if (scc_map[i<<1] == scc_map[(i<<1)|1]) {
+      return false;
+    }
+  }
+  return true;
+}/*}}}*/
+
 // minimum cost flow
 // returns (cost, flow)
-// POJ 2195
+// POJ 2195 Going Home
 struct Edge/*{{{*/
 {
   int index;
