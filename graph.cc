@@ -448,6 +448,8 @@ pair<int,int> primal_dual(const vector<vector<Edge> >& g, int source, int sink)/
 
 // 多重辺があっても動く Primal-Dual
 // POJ 2047 Concert Hall Scheduling
+// Codeforces #170(Div.1)E Binary Tree on Plane
+// Costを浮動小数点数にするときは，EPSを考慮しないとDijkstra部で死ぬことがある．
 template <class Flow, class Cost>
 struct edge/*{{{*/
 {
