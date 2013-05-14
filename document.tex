@@ -1,5 +1,5 @@
 \documentclass[a4paper,twocolumn,landscape]{jsarticle}
-\usepackage{listings}
+\usepackage{listings,lstlinebgrd}
 \usepackage{fancyhdr}
 
 % Size adjustment {{{
@@ -36,14 +36,25 @@
 \renewcommand{\footrulewidth}{0pt}
 % }}}
 % listings {{{
+\newcommand{\LineBackground}{%
+  \ifodd\value{lstnumber}
+  \color[gray]{1.0}
+  \else
+  \color[gray]{.95}
+  \fi
+}
 \lstset{
-  language=C,
-  numberstyle=\ttfamily,
+  language={C++},
   breaklines=true,
+  basewidth=0.50em,
+  numbers=none,
+  linebackgroundcolor=\LineBackground,
+  float=h,
   basicstyle=\ttfamily,
   commentstyle=\ttfamily,
-  basewidth=0.50em,
-  float=h,
+  keywordstyle=\ttfamily,
+  stringstyle=\ttfamily,
+  identifierstyle=\ttfamily,
 }
 % }}}
 
