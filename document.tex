@@ -43,6 +43,9 @@
   \color[gray]{.95}
   \fi
 }
+\definecolor{stringcolor}{rgb}{1.0,0.0,0.0}
+\definecolor{commentcolor}{rgb}{0.0,0.6,0.0}
+\definecolor{keywordcolor}{rgb}{0.0,0.0,1.0}
 \lstset{
   language={C++},
   breaklines=true,
@@ -51,10 +54,11 @@
   linebackgroundcolor=\LineBackground,
   float=h,
   basicstyle=\ttfamily,
-  commentstyle=\ttfamily,
-  keywordstyle=\ttfamily,
-  stringstyle=\ttfamily,
+  commentstyle=\color{commentcolor}\ttfamily,
+  keywordstyle=\color{keywordcolor}\ttfamily,
+  stringstyle=\color{stringcolor}\ttfamily,
   identifierstyle=\ttfamily,
+  morekeywords={string,istringstream,cerr,exit},
 }
 % }}}
 
