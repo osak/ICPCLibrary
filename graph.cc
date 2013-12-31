@@ -354,6 +354,43 @@ pair<vector<int>,int> strongly_connected_components(const vector<vector<int> >& 
   return make_pair(scc_map, scc_size);
 }/*}}}*/
 
+// Tarjanの橋分解アルゴリズム
+void dfs(const vector<vector<Edge*>> &graph, int pos, int prev, vector<int> &low, vector<int> &ord, vector<int> &buf, int &cnt) {
+    ord[pos] = cnt++;
+    low[pos] = ord[pos];
+    if(start_of[pos] == -1) return;
+    for(Edge *e : graph[pos]) {
+        const int next = e->to;
+        if(ord[next] == -1) {
+            dfs(graph, next, pos, low, ord, buf, cnt);
+            low[pos] = min(low[pos], low[next]);
+            if(low[next] == ord[next]) {
+                buf.push_back(i);
+            }
+        } else if(next != prev) {
+            low[pos] = min(low[pos], ord[next]);
+        }
+    }
+}
+
+/*
+ * Tarjanの橋分解アルゴリズム。
+ * O(V+E)
+ *
+ * POJ3177 Redundant Paths
+ */
+void bridges(const vector<vector<Edge*>> &graph, vector<int> &buf) {
+    const int N = graph.size();
+    vector<int> low(N, -1);
+    vector<int> ord(N, -1);
+    int cnt = 0;
+    TIMES(i, N) {
+        if(ord[i] == -1) {
+            dfs(graph, i, -1, low, ord, buf, cnt);
+        }
+    }
+}
+
 /* 2-SAT
  * i 番目の正のリテラルは i<<1、負のリテラルは (i<<1)|1 で表現する。
  * リテラルの否定は 1 と XOR をとるだけ。
