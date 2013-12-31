@@ -312,6 +312,34 @@ void suffix_array(const string &str, vector<int> &sa) {
     }
 }
 
+// Longest Common Prefixを計算する。
+// lcpa[i] = sa[i]とsa[i+1]のLCP長。
+// O(N)
+// POJ3882 Stammering Aliens
+void lcp(const string &str, const vector<int> &sa, vector<int> &lcpa) {
+    const int N = str.size();
+    vector<int> inv(N);
+    for(int i = 0; i < N; ++i) {
+        inv[sa[i]] = i;
+    }
+    int h = 0;
+    for(int i = 0; i < N; ++i) {
+        const int next = inv[i]+1 < N ? sa[inv[i]+1] : -1;
+        if(next == -1) {
+            h = 0;
+            lcpa[inv[i]] = -1;
+        } else {
+            if(h > 0) --h;
+            const int lim = min(N-i, N-next);
+            for(int j = h; j < lim; ++j) {
+                if(str[i+j] != str[next+j]) break;
+                ++h;
+            }
+            lcpa[inv[i]] = h;
+        }
+    }
+}
+
 // 文字列を検索する．
 // 複数の候補がある場合，最初に一致したインデックスを返す．
 // 計算量O(M log N)
