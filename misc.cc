@@ -47,13 +47,13 @@ struct DisjointSet/*{{{*/
 template <class T>
 struct BinaryIndexedTree/*{{{*/
 {
-  T tree;
+  vector<T> tree;
   const int size;
-  BinaryIndexedTree(const T& t, int s) : tree(t), size(s) {}
+  BinaryIndexedTree(int s) : tree(t), size(s) {}
   // i 番目までの要素の累積和
-  int read(int i) const
+  T read(int i) const
   {
-    int sum = 0;
+    T sum = 0;
     while (i > 0) {
       sum += tree[i];
       i -= i & -i;
@@ -62,9 +62,9 @@ struct BinaryIndexedTree/*{{{*/
   }
 
   // i 番目の要素
-  int read_single(int i) const
+  T read_single(int i) const
   {
-    int sum = tree[i];
+    T sum = tree[i];
     if (i > 0) {
       const int z = i - (i & -i);
       --i;
@@ -76,13 +76,28 @@ struct BinaryIndexedTree/*{{{*/
     return sum;
   }
 
-  void add(int i, int v)
+  void add(int i, T v)
   {
     while (i <= size) {
       tree[i] += v;
       i += (i & -i);
     }
   }
+
+  // read(i) == vとなる最小のi。存在しなければ-1。
+  int search(T v) {
+        int left = 0, right = size;
+        while(left+1 < right) {
+            const int center = (left+right) / 2;
+            if(read(center) < v) {
+                left = center;
+            } else {
+                right = center;
+            }
+        }
+        if(right == size || read(right) != v) return -1;
+        return right;
+    }
 };/*}}}*/
 
 // POJ 3264 Balanced Lineup
