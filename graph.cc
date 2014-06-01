@@ -94,80 +94,77 @@ T edmonds_karp(const vector<vector<T> >& capacity, int source, int sink)/*{{{*/
 }/*}}}*/
 
 template <class T>
-T dinic_augment(const T capacity[M][M], int N, T flow[M][M], int level[M], bool finished[M], int u, int sink, T cur)/*{{{*/
+T dinic_augment(vector<vector<Edge<T>*>> &graph, vector<int> &level, vector<bool> &finished, int u, int sink, T cur)/*{{{*/
 {
-  if (u == sink || cur == 0) {
-    return cur;
-  }
-  if (finished[u]) {
-    return 0;
-  }
-  finished[u] = true;
-  for (int v = 0; v < N; v++) {
-    if (capacity[u][v] - flow[u][v] > 0 && level[v] > level[u]) {
-      const T f = dinic_augment(capacity, N, flow, level, finished, v, sink, min(cur, capacity[u][v] - flow[u][v]));
-      if (f > 0) {
-        flow[u][v] += f;
-        flow[v][u] -= f;
-        finished[u] = false;
-        return f;
-      }
+    if (u == sink || cur == 0) {
+        return cur;
     }
-  }
-  return 0;
+    if (finished[u]) {
+        return 0;
+    }
+    finished[u] = true;
+    for(auto e : graph[u]) {
+        if(e->capacity - e->flow > 0 && level[e->to] > level[u]) {
+            const T f = dinic_augment(graph, level, finished, e->to, sink, min(cur, e->capacity - e->flow));
+            if (f > 0) {
+                e->flow += f;
+                e->back->flow -= f;
+                finished[u] = false;
+                return f;
+            }
+        }
+    }
+    return 0;
 }/*}}}*/
 
 // O(V^2 E)
 template <typename T>
-T dinic(const T capacity[M][M], int N, int source, int sink)/*{{{*/
+T dinic(vector<vector<Edge<T>*>> &graph, int source, int sink)/*{{{*/
 {
-  static T flow[M][M];
-  for (int i = 0; i < N; i++) {
-    fill_n(flow[i], N, 0);
-  }
-  T max_flow = 0;
+    const int N = graph.size();
+    T max_flow = 0;
 
-  while (true) {
-    static int level[M];
-    fill_n(level, N, -1);
-    level[source] = 0;
-    queue<int> q;
-    q.push(source);
-
-    int d = N;
-    while (!q.empty() && level[q.front()] < d) {
-      const int u = q.front();
-      q.pop();
-
-      if (u == sink) {
-        d = level[u];
-      }
-      for (int v = 0; v < N; v++) {
-        if (level[v] < 0 && capacity[u][v] - flow[u][v] > 0) {
-          q.push(v);
-          level[v] = level[u] + 1;
-        }
-      }
-    }
-
-    static bool finished[M];
-    fill_n(finished, M, false);
-    bool updated = false;
+    vector<int> level(N);
+    vector<bool> finished(N);
     while (true) {
-      const T f = dinic_augment(capacity, N, flow, level, finished, source, sink, INF);
-      if (f == 0) {
-        break;
-      }
-      max_flow += f;
-      updated = true;
+        fill(level.begin(), level.end(), -1);
+        level[source] = 0;
+        queue<int> q;
+        q.push(source);
+
+        int d = N;
+        while (!q.empty() && level[q.front()] < d) {
+            const int u = q.front();
+            q.pop();
+
+            if (u == sink) {
+                d = level[u];
+            }
+            for(auto e : graph[u]) {
+                if (level[e->to] < 0 && e->capacity - e->flow > 0) {
+                    q.push(e->to);
+                    level[e->to] = level[u] + 1;
+                }
+            }
+        }
+
+        fill(finished.begin(), finished.end(), false);
+        bool updated = false;
+        while (true) {
+            const T f = dinic_augment<T>(graph, level, finished, source, sink, INF);
+            if (f == 0) {
+                break;
+            }
+            max_flow += f;
+            updated = true;
+        }
+
+        if (!updated) {
+            break;
+        }
     }
 
-    if (!updated) {
-      break;
-    }
-  }
-
-  return max_flow;
+    return max_flow;
 }/*}}}*/
 
 // 連結な無向グラフのすべての辺を通るような閉路で，コストの合計の最小値
