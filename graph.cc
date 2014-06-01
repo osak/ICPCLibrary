@@ -484,79 +484,74 @@ pair<int,int> primal_dual(const vector<vector<Edge> >& g, int source, int sink)/
 // POJ 2047 Concert Hall Scheduling
 // Codeforces #170(Div.1)E Binary Tree on Plane
 // Costを浮動小数点数にするときは，EPSを考慮しないとDijkstra部で死ぬことがある．
-template <class Flow, class Cost>
-struct edge/*{{{*/
-{
-  int index;
-  Flow capacity, flow;
-  Cost cost;
-  int back;
-  edge(int i, Flow c, Cost d, int b) : index(i), capacity(c), flow(0), cost(d), back(b) {}
-};/*}}}*/
+// C++11対応版にしたのでVerifyしなおすこと。
+template<class Flow, class Cost>
+struct Edge {
+    int from, to;
+    Flow capacity, flow;
+    Cost cost;
+    Edge *back;
+    Edge() {}
+    Edge(int from, int to, Flow c, Cost d, Edge *b) : from(from), to(to), capacity(c), flow(0), cost(d), back(b) {}
+};
+template<class Flow, class Cost>
+void make_edge(vector<vector<Edge<Flow,Cost>*>> &g, int src, int dst, Flow c, Cost d) {
+    auto *e = new Edge<Flow,Cost>(src, dst, c, d, nullptr);
+    auto *back = e->back = new Edge<Flow,Cost>(dst, src, 0, -d, e);
+    g[src].push_back(e);
+    g[dst].push_back(back);
+}
 
-template <class Flow, class Cost>
-void make_edge(vector<edge<Flow, Cost> > *g, int src, int dst, Flow c, Cost d)/*{{{*/
-{
-  const int i = g[src].size(), j = g[dst].size();
-  g[src].push_back(edge<Flow, Cost>(dst, c, d, j));
-  g[dst].push_back(edge<Flow, Cost>(src, 0, -d, i));
-}/*}}}*/
-
-// O(V^2 U C) where
-//  U = sum of capacity
-//  C = sum of cost
-template <class Flow, class Cost>
-pair<Flow, Cost>
-primal_dual(vector<edge<Flow, Cost> > *g, int N, int source, int sink, int max_flow)/*{{{*/
-{
-  pair<Flow, Cost> total;
-  static Cost h[MAXN], dist[MAXN];
-  static pair<int,int> parent[MAXN];
-  for (Flow f = max_flow; f > 0; ) {
-    fill_n(dist, N, 1000000);
-    dist[source] = 0;
-    fill_n(parent, N, make_pair(-1, -1));
-    priority_queue<pair<Cost,int> > q;
-    q.push(make_pair(0, source));
-    while (!q.empty()) {
-      const int n = q.top().second;
-      const Cost c = -q.top().first;
-      q.pop();
-      if (dist[n] < c) {
-        continue;
-      }
-      for (typename vector<edge<Flow, Cost> >::const_iterator it = g[n].begin(); it != g[n].end(); ++it) {
-        if (it->capacity - it->flow > 0) {
-          const Cost c2 = c + it->cost + h[n] - h[it->index];
-          if (c2 < dist[it->index]) {
-            dist[it->index] = c2;
-            parent[it->index] = make_pair(n, it - g[n].begin());
-            q.push(make_pair(-c2, it->index));
-          }
+template<class Flow, class Cost>
+pair<Flow, Cost> primal_dual(vector<vector<Edge<Flow,Cost>*>> &g, int src, int sink, int max_flow) {
+    const int N = g.size();
+    pair<Flow, Cost> res;
+    vector<Cost> h(N), dist(N);
+    vector<Edge<Flow,Cost>*> parent(N);
+    for(Flow f = max_flow; f > 0; ) {
+        fill(dist.begin(), dist.end(), INF);
+        dist[src] = 0;
+        fill(parent.begin(), parent.end(), nullptr);
+        priority_queue<pair<Cost,int>> q;
+        q.push(make_pair(0, src));
+        while(!q.empty()) {
+            const int n = q.top().second;
+            const Cost c = -q.top().first;
+            q.pop();
+            if(dist[n] < c) {
+                continue;
+            }
+            for(auto e : g[n]) {
+                if(e->capacity - e->flow > 0) {
+                    const Cost c2 = c + e->cost + h[n] - h[e->to];
+                    if(c2 < dist[e->to]) {
+                        dist[e->to] = c2;
+                        parent[e->to] = e;
+                        q.push(make_pair(-c2, e->to));
+                    }
+                }
+            }
         }
-      }
-    }
-    if (parent[sink].first == -1) {
-      break;
-    }
+        if(parent[sink] == nullptr) {
+            break;
+        }
 
-    Flow e = f;
-    for (int i = sink; i != source; i = parent[i].first) {
-      const edge<Flow, Cost>& x = g[parent[i].first][parent[i].second];
-      e = min(e, x.capacity - x.flow);
+        Flow to_push = f;
+        for(int i = sink; i != src; i = parent[i]->from) {
+            auto e = parent[i];
+            to_push = min(to_push, e->capacity - e->flow);
+        }
+        for(int i = sink; i != src; i = parent[i]->from) {
+            auto e = parent[i];
+            res.second += to_push * e->cost;
+            e->flow += to_push;
+            e->back->flow -= to_push;
+        }
+        f -= to_push;
+        res.first += to_push;
+        for(int i = 0; i < N; ++i) {
+            h[i] += dist[i];
+        }
     }
-    for (int i = sink; i != source; i = parent[i].first) {
-      edge<Flow, Cost>& x = g[parent[i].first][parent[i].second];
-      total.second += e * x.cost;
-      x.flow += e;
-      g[x.index][x.back].flow -= e;
-    }
-    f -= e;
-    total.first += e;
-    for (int i = 0; i < N; i++) {
-      h[i] += dist[i];
-    }
-  }
-
-  return total;
+    return res;
 }/*}}}*/
