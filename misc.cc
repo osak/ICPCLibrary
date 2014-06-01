@@ -45,11 +45,11 @@ struct DisjointSet/*{{{*/
 // - tree[3] = 6
 // となる．
 template <class T>
-struct BinaryIndexedTree/*{{{*/
+struct BIT/*{{{*/
 {
-  T tree;
+  vector<T> tree;
   const int size;
-  BinaryIndexedTree(const T& t, int s) : tree(t), size(s) {}
+  BIT(int s) : tree(s), size(s) {}
   // i 番目までの要素の累積和
   int read(int i) const
   {
