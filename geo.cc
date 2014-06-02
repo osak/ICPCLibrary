@@ -24,15 +24,15 @@ int ccw(const P& a, P b, P c)
 {
   b -= a;
   c -= a;
-  if (cross(b, c) > EPS) {
+  if (cross(b, c) > EPS) { // ccw
     return +1;
-  } else if (cross(b, c) < -EPS) {
+  } else if (cross(b, c) < -EPS) { // cw
     return -1;
-  } else if (dot(b, c) < -EPS) {
+  } else if (dot(b, c) < -EPS) { // c-a-b or b-a-c
     return +2;
-  } else if (dot(b, b) + EPS < dot(c, c)) {
+  } else if (dot(b, b) + EPS < dot(c, c)) { // a-b-c
     return -2;
-  } else {
+  } else { // a-c-b
     return 0;
   }
 }
