@@ -179,6 +179,21 @@ struct polygon/*{{{*/
   }
 };/*}}}*/
 
+// Be careful to lack of robustness.
+// 半直線に完全に含まれる辺が存在すると死ぬ。
+bool in_polygon(const vector<P> &polygon, const P &p) {
+    const int N = polygon.size();
+    segment seg(p, P(2e7, p.imag()+0.1));
+    int cnt = 0;
+    for(int i = 0; i < N; ++i) {
+        const int ni = (i+1) % N;
+        segment edge(polygon[i], polygon[ni]);
+        if(seg.intersects(edge)) ++cnt;
+        if(ccw(edge.a, p, edge.b) == -2) return true;
+    }
+    return cnt % 2 == 1;
+}
+
 // O(N)
 vector<P> convex(const vector<P>& ps)/*{{{*/
 {
