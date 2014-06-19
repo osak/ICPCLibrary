@@ -1,0 +1,86 @@
+Monge \\
+重み関数$w$が任意の$a<b<c<d$で $w(a,c)+w(b,d)<w(a,d)+w(b,c)$というような具合の関数であることで、さらに$DP[left][right] = min(DP[left][k] + DP[k+1][right])+w[left][right]$を満たすことが必要である。もっと一般化すれば、次のような式に帰着させることができる。
+
+\[
+F(i,j,r) = \begin{cases}
+  w(i) & i=j , p \geq 0 \\
+  \min_{i \leq s <j} ( aF(i,s,f(r)) + bF(s+1,j,g(r)) +h(i,s,j) ) & f(r) \geq 0 , g(r) \geq 0
+\end{cases} \]
+ ただし$h(i,s,j)$はMonge関数のようなもので、次を満たすようなものである
+
+$i \leq j \leq t < k \leq l$かつ$i \leq s < l$
+\[
+(t\leq s)のとき、 h(i,t,k) - h(j,t,k) + h(j,s,l) - h(i,s,l) \leq 0 , h(j,s,l) - h(i,s,l) \leq 0 \]
+\[
+(s \leq t)のとき、h(j,t,l) - h(j,t,k) + h(i,s,k) - h(i,s,l) \leq 0, h(i,s,k) - h(i,s,l) \leq 0 \]
+
+
+
+例えば、一般化ハノイの塔は次の漸化式になる
+
+\[
+T(i,j,p) = \begin{cases}
+w(i) & i=j , p>=0  \\
+\min_{i \leq j}(2T(i,s,p) + T(s+1,j,p-1)) & i<j, p>0
+
+\end{cases} \]
+\begin{lstlisting}[caption=MongeDP]
+  for(int d=1; d<n; d++) {
+    for(int left=0; left+d<=n; left++) {
+      int right = left+d;
+      for(int k=pos[left][right-1]; k<=pos[left+1][right]; k++ ) {
+	LL newNum = dp[left][k] + dp[k+1][right]
+	  + (input[k+1].first - input[left].first)
+	  + (input[k].second - input[right].second);
+	if(newNum < dp[left][right]) {
+	  dp[left][right] = newNum;
+	  pos[left][right] = k;	  
+	}
+      }
+    }
+  } 
+\end{lstlisting}
+
+
+・Turanの定理\\
+$n$頂点をもち、部分グラフとして$K_{r+1}$を持たないとする。
+このとき、辺数は高々以下の数になる
+\[\frac{r-1}{r} * \frac{n*n}{2}\]
+
+・Cayleyの定理\\
+完全グラフKnが与えられる。このとき、このグラフで作れる全域木(spanning tree)の総数は$n^{n-2}$\\
+
+・リーグ戦の成績\\
+N人のリーグ戦があったとし、必ず勝敗が確定したものとする。\\
+各人の勝ち数が与えられたとして、このような勝敗の付きかたになる勝敗の結果が存在するかの判定\\
+
+\[存在する \Leftrightarrow \begin{cases}
+0 \leq s_1 \leq ... \leq s_n <= n-1 \\
+\forall i, \sum_{j=1}^{i} s_j \geq C(i,2) \\
+\sum_{j=1}^{n} s_j = C(n,2)
+\end{cases} \]
+
+
+辺の張り方
+
+・2-SAT
+(P or Q)のとき : addedge(not p, q) , addedge(not q, p); \\
+
+注意 : 制約の形が元から (pならば q )だったからといって、
+(not qならば not p)の制約を忘れてはならない。
+
+
+・最小カット
+\[f(x) := x>0 ? 1 : 0\]
+\[minimize sum(x[i] - x[j]) * c[i][j]\]
+\[s.t. x[i]=0,1 x[s]=1, x[t]=0\]
+とする
+
+以下参照
+
+$x[p]=1$ならば$x[q]=1$  $p \rightarrow q$(cap:INF)\\
+$x[p]=0$ならば$x[q]=0$	$q \rightarrow p$(cap:INF)\\
+$x[p]=1$ $s \rightarrow p$(cap:INF)\\
+$x[p]=0$ $p \rightarrow t$(cap:INF)\\
+$x[p]=1$ならば$x[q]=0$	(どちらかの$x$を反転)\\
+$x[p]=0$ならば$x[q]=1$	(同上)\\
