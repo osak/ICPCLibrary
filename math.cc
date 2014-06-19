@@ -26,7 +26,7 @@ Matrix operator*(const Matrix &a, const Matrix &b) {
 }
 
 // Codeforces 222E Decoding Genome
-// 正方行列matの0乗，1乗，2乗，4乗，……，2^(cnt)乗を作る．
+// 正方行列 mat の 0 乗， 1 乗，2 乗，4 乗，……，2^(cnt) 乗を作る．
 vector<Matrix>& gen_base(Matrix mat, int cnt, vector<Matrix> &out) {
     const int N = mat.size();
     out.clear();
@@ -41,7 +41,7 @@ vector<Matrix>& gen_base(Matrix mat, int cnt, vector<Matrix> &out) {
 }
 
 // Codeforces 222E Decoding Genome
-// gen_base で作った行列からx乗を求める．
+// gen_base で作った行列から x 乗を求める．
 Matrix mat_pow(const vector<Matrix> &base, int x) {
     const int N = base.size();
     Matrix res(base[0]);

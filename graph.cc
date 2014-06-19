@@ -247,7 +247,7 @@ bool bm_augment(const vector<vector<int> >& g, int u, vector<int>& match_to, vec
 } // }}}
 
 // O(V(V+E))
-// Ford Fulkersonの変形．
+// Ford Fulkerson の変形．
 int bipartite_matching(const vector<vector<int> >& g, int L, vector<pair<int,int> >& matching)  // {{{
 {
   const int N = g.size();
@@ -351,7 +351,7 @@ pair<vector<int>,int> strongly_connected_components(const vector<vector<int> >& 
   return make_pair(scc_map, scc_size);
 }/*}}}*/
 
-// Tarjanの橋分解アルゴリズム
+// Tarjan の橋分解アルゴリズム
 void dfs(const vector<vector<Edge*>> &graph, int pos, int prev, vector<int> &low, vector<int> &ord, vector<int> &buf, int &cnt) {
     ord[pos] = cnt++;
     low[pos] = ord[pos];
@@ -371,7 +371,7 @@ void dfs(const vector<vector<Edge*>> &graph, int pos, int prev, vector<int> &low
 }
 
 /*
- * Tarjanの橋分解アルゴリズム。
+ * Tarjan の橋分解アルゴリズム。
  * O(V+E)
  *
  * POJ3177 Redundant Paths
@@ -389,7 +389,7 @@ void bridges(const vector<vector<Edge*>> &graph, vector<int> &buf) {
 }
 
 /* 2-SAT
- * i 番目の正のリテラルは i<<1、負のリテラルは (i<<1)|1 で表現する。
+ * i 番目の正のリテラルは i<<1 、負のリテラルは (i<<1)|1 で表現する。
  * リテラルの否定は 1 と XOR をとるだけ。
  *
  * (A /\ B) == (!A -> A) /\ (!B -> B)
@@ -483,8 +483,7 @@ pair<int,int> primal_dual(const vector<vector<Edge> >& g, int source, int sink)/
 // 多重辺があっても動く Primal-Dual
 // POJ 2047 Concert Hall Scheduling
 // Codeforces #170(Div.1)E Binary Tree on Plane
-// Costを浮動小数点数にするときは，EPSを考慮しないとDijkstra部で死ぬことがある．
-// C++11対応版にしたのでVerifyしなおすこと。
+// Cost を浮動小数点数にするときは，EPS を考慮しないと Dijkstra 部で死ぬことがある．
 template<class Flow, class Cost>
 struct Edge {
     int from, to;

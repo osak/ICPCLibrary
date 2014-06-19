@@ -227,7 +227,7 @@ struct circle/*{{{*/
   circle(const P& p, double x) : o(p), r(x) {}
 
   // POJ 1375 Intervals
-  // 点 p を通る2つの接線
+  // 点 p を通る 2 つの接線
   pair<P,P> tangent(const P& p) const
   {
     const double L = abs(o - p);

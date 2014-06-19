@@ -84,20 +84,20 @@ struct BIT/*{{{*/
     }
   }
 
-  // read(i) == vとなる最小のi。存在しなければ-1。
+  // read(i) == v となる最小の i 。存在しなければ -1 。
   int search(T v) {
-        int left = 0, right = size;
-        while(left+1 < right) {
-            const int center = (left+right) / 2;
-            if(read(center) < v) {
-                left = center;
-            } else {
-                right = center;
-            }
-        }
-        if(right == size || read(right) != v) return -1;
-        return right;
+    int left = 0, right = size;
+    while(left+1 < right) {
+      const int center = (left+right) / 2;
+      if(read(center) < v) {
+        left = center;
+      } else {
+        right = center;
+      }
     }
+    if(right == size || read(right) != v) return -1;
+    return right;
+  }
 };/*}}}*/
 
 // POJ 3264 Balanced Lineup
@@ -216,7 +216,7 @@ struct SegmentTree/*{{{*/
     }
 
     // [left, right) に対するクエリ．
-    // 現在のノードはpos で， [pl, pr) を表わしている．
+    // 現在のノードは pos で， [pl, pr) を表わしている．
     T get_inner(int left, int right, size_t pos, int pl, int pr) {
         if(pr <= left || right <= pl) return 0; // 交差しない
         if(left <= pl && pr <= right) return nodes[pos] + stocks[pos]; // 完全に含まれる
@@ -262,8 +262,8 @@ struct SegmentTree/*{{{*/
  * 0:  a a a a a a a a
  * 1:   b b b b b b b
  * 2:  a a a a a a a a
- * のように，左上(0,0)が出張っている場合の配列．
- * 左上が引っ込んでいる場合はEvenとOddを逆にする．
+ * のように，左上 (0,0) が出張っている場合の配列．
+ * 左上が引っ込んでいる場合は Even と Odd を逆にする．
  */
 const int DR[6] = {0, -1, -1, 0, 1, 1};
 const int DC[2][6] = {
@@ -291,10 +291,10 @@ struct SAComp {
 // A Fast Algorithm for Making Suffix Arrays and for Burrows-Wheeler Transformation
 // (Kunihiko Sadakane, 1998)
 // の実装．ただし，以下の変更を加えている．
-// ・同じグループごとにソートするのではなく，Suffix Array全体を一度にソートする．
-// saの中身は開始インデックス．
+// ・同じグループごとにソートするのではなく， Suffix Array 全体を一度にソートする．
+// sa の中身は開始インデックス．
 //
-// 計算量O(N (log N)^2)
+// 計算量 O(N (log N)^2)
 void suffix_array(const string &str, vector<int> &sa) {
     assert(sa.size() >= str.size());
 
@@ -316,7 +316,7 @@ void suffix_array(const string &str, vector<int> &sa) {
 
     for(int h = 1; h < N && group[N-1] != N-1; h <<= 1) {
         //Generate <_{2*h} ordered array from <_{h} ordered array
-        //この中身はcmpのコンストラクタ引数以外，上のブロックと同じ．
+        //この中身は cmp のコンストラクタ引数以外，上のブロックと同じ．
         SAComp cmp(&group, h);
         sort(sa.begin(), sa.end(), cmp);
         next[sa[0]] = 0;
@@ -327,8 +327,8 @@ void suffix_array(const string &str, vector<int> &sa) {
     }
 }
 
-// Longest Common Prefixを計算する。
-// lcpa[i] = sa[i]とsa[i+1]のLCP長。
+// Longest Common Prefix を計算する。
+// lcpa[i] = sa[i] と sa[i+1] の LCP 長。
 // O(N)
 // POJ3882 Stammering Aliens
 void lcp(const string &str, const vector<int> &sa, vector<int> &lcpa) {
@@ -357,7 +357,7 @@ void lcp(const string &str, const vector<int> &sa, vector<int> &lcpa) {
 
 // 文字列を検索する．
 // 複数の候補がある場合，最初に一致したインデックスを返す．
-// 計算量O(M log N)
+// 計算量 O(M log N)
 int find(const string &src, const string &str, const vector<int> &sa) {
     int left = 0, right = sa.size();
     while(left < right) {
