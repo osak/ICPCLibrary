@@ -17,8 +17,8 @@ LL calc_func(LL n) {
 \end{lstlisting}
 
 NOTE: $gcd(n,d)=1$に対する$f(d)$の数え上げについては, $n$を構成する相異なる素数$p_i$を用意して, $f(1)$から$f(d)$までの総和を$g(d)$として\\
-$\sum_{p_iがb個の積でsquare-freeな積d}{ d*g(n/d)(-1)^b }$のような変形ができることがある。\\
-(例えば $f(n) = n^3)$とか)
+$\sum_{p_iがb個の積でsquare-freeな積d}{ f(n)*g(n/d)(-1)^b }$のような変形ができることがある。\\
+(例えば $f(n) = n^3)$のような多項式に適用できる)
 
 \section{Monge}
 重み関数$w$が任意の$a<b<c<d$で $w(a,c)+w(b,d)<w(a,d)+w(b,c)$というような具合の関数であることで、さらに$DP[left][right] = min(DP[left][k] + DP[k+1][right])+w[left][right]$を満たすことが必要である。もっと一般化すれば、次のような式に帰着させることができる。
