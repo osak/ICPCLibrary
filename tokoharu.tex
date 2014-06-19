@@ -1,3 +1,25 @@
+\section{moebius}
+
+\begin{lstlisting}[caption = gcd系関数]
+//S(a)=g(a) - sum(i=2..a) S(floor(a/i))を求めるもの
+//g(n) が O(1) レベルで求まるなら O(n^(2/3)). n<=10^11 ぐらいまでなら多分大丈夫 
+map<LL,LL> results;
+LL calc_func(LL n) {
+ if(resultsA.find(n)!=resultsA.end())
+    return resultsA[n];
+  LL ret = triangle_num[n]; // g(a)
+  LL last=n;
+  for(LL a=2; a*a<=n; a++) ret -= calc_func(n/a),last=n/a;
+  for(LL a=1; a<last; a++) ret -= calc_func(a) * (n/a-n/(a+1));
+  results[n]=ret;
+  return ret;
+}
+\end{lstlisting}
+
+NOTE: $gcd(n,d)=1$に対する$f(d)$の数え上げについては, $n$を構成する相異なる素数$p_i$を用意して, $f(1)$から$f(d)$までの総和を$g(d)$として\\
+$\sum_{p_iがb個の積でsquare-freeな積d}{ d*g(n/d)(-1)^b }$のような変形ができることがある。\\
+(例えば $f(n) = n^3)$とか)
+
 \section{Monge}
 重み関数$w$が任意の$a<b<c<d$で $w(a,c)+w(b,d)<w(a,d)+w(b,c)$というような具合の関数であることで、さらに$DP[left][right] = min(DP[left][k] + DP[k+1][right])+w[left][right]$を満たすことが必要である。もっと一般化すれば、次のような式に帰着させることができる。
 
@@ -84,3 +106,4 @@ $x[p]=1$ $s \rightarrow p$(cap:INF)\\
 $x[p]=0$ $p \rightarrow t$(cap:INF)\\
 $x[p]=1$ならば$x[q]=0$	(どちらかの$x$を反転)\\
 $x[p]=0$ならば$x[q]=1$	(同上)\\
+
