@@ -1,3 +1,4 @@
+// vim:fdm=marker:
 #include <vector>
 #include <queue>
 #include <limits>
@@ -304,54 +305,44 @@ T stoer_wagner(vector<vector<T> > g)/*{{{*/
   return cut;
 }/*}}}*/
 
-void scc_visit(const vector<vector<int> >& g, int v, vector<int>& scc_map, int& scc_size,/*{{{*/
-        stack<int>& stk, vector<bool>& in_stk, vector<int>& low, vector<int>& num, int& time)
-{
-  low[v] = num[v] = ++time;
-  stk.push(v);
-  in_stk[v] = true;
-  for (vector<int>::const_iterator it(g[v].begin()); it != g[v].end(); ++it) {
-    const int u = *it;
-    if (num[u] == 0) {
-      scc_visit(g, u, scc_map, scc_size, stk, in_stk, low, num, time);
-      low[v] = min(low[v], low[u]);
-    } else if (in_stk[u]) {
-      low[v] = min(low[v], num[u]);
-    }
-  }
-  if (low[v] == num[v]) {
-    for (;;) {
-      const int u = stk.top();
-      stk.pop();
-      in_stk[u] = false;
-      scc_map[u] = scc_size;
-      if (u == v) {
-        break;
-      }
-    }
-    ++scc_size;
-  }
-}/*}}}*/
-
 // O(V+E)
-pair<vector<int>,int> strongly_connected_components(const vector<vector<int> >& g)/*{{{*/
-{
-  const int N = g.size();
-  vector<int> num(N), low(N);
-  stack<int> stk;
-  vector<bool> in_stk(N, false);
-  int time = 0;
-  vector<int> scc_map(N);
-  int scc_size = 0;
-  for (int v = 0; v < N; v++) {
-    if (num[v] == 0) {
-      scc_visit(g, v, scc_map, scc_size, stk, in_stk, low, num, time);
-    }
-  }
-  return make_pair(scc_map, scc_size);
-}/*}}}*/
+// 強連結成分分解 {{{
+void dfs1(int pos, const vector<vector<int>> &g, vector<bool> &visited, vector<int> &buf) {
+    if(visited[pos]) return;
+    visited[pos] = true;
+    for(int to : g[pos]) dfs1(to, g, visited, buf);
+    buf.push_back(pos);
+}
 
-// Tarjan の橋分解アルゴリズム
+void dfs2(int pos, const vector<vector<int>> &g, int label, vector<int> &buf) {
+    if(buf[pos] != -1) return;
+    buf[pos] = label;
+    for(int to : g[pos]) dfs2(to, g, label, buf);
+}
+
+vector<int> scc(const vector<vector<int>> &g) {
+    const int N = g.size();
+    vector<vector<int>> rev(N);
+    for(int i = 0; i < N; ++i) {
+        for(int to : g[i]) {
+            rev[to].push_back(i);
+        }
+    }
+    vector<bool> visited(N, false);
+    vector<int> ord;
+    for(int i = 0; i < N; ++i) {
+        dfs1(i, g, visited, ord);
+    }
+    reverse(begin(ord), end(ord));
+    vector<int> label(N, -1);
+    int l = 0;
+    for(int pos : ord) {
+        if(label[pos] == -1) dfs2(pos, rev, l++, label);
+    }
+    return label;
+} // }}}
+
+// Tarjan の橋分解アルゴリズム {{{
 void dfs(const vector<vector<Edge*>> &graph, int pos, int prev, vector<int> &low, vector<int> &ord, vector<int> &buf, int &cnt) {
     ord[pos] = cnt++;
     low[pos] = ord[pos];
@@ -386,7 +377,7 @@ void bridges(const vector<vector<Edge*>> &graph, vector<int> &buf) {
             dfs(graph, i, -1, low, ord, buf, cnt);
         }
     }
-}
+}// }}}
 
 /* 2-SAT
  * i 番目の正のリテラルは i<<1 、負のリテラルは (i<<1)|1 で表現する。
@@ -480,7 +471,7 @@ pair<int,int> primal_dual(const vector<vector<Edge> >& g, int source, int sink)/
   return total;
 }/*}}}*/
 
-// 多重辺があっても動く Primal-Dual
+// 多重辺があっても動く Primal-Dual {{{
 // POJ 2047 Concert Hall Scheduling
 // Codeforces #170(Div.1)E Binary Tree on Plane
 // Cost を浮動小数点数にするときは，EPS を考慮しないと Dijkstra 部で死ぬことがある．
