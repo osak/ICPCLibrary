@@ -1,4 +1,4 @@
-// vim:fdm=marker:
+// vim:set fdm=marker:
 #include <vector>
 #include <queue>
 #include <limits>
