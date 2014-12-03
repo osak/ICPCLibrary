@@ -219,6 +219,32 @@ vector<P> convex(const vector<P>& ps)/*{{{*/
   return ch;
 }/*}}}*/
 
+// 最小包含円 {{{
+// O(KN)
+// Kは試行回数
+// どれくらいの精度が保証できるのかよく分からない……
+pair<P, double> enclosing_circle(const vector<P> &ps) {
+    P c = accumulate(begin(ps), end(ps), P(0, 0)) / (double)ps.size();
+    for(int i = 0; i < 1000; ++i) {
+        P farthest;
+        double maxd = 0;
+        for(const P &p : ps) {
+            double d = abs(c - p);
+            if(d > maxd) {
+                farthest = p;
+                maxd = d;
+            }
+        }
+        P vec = farthest - c;
+        c += vec * pow(0.9, i+1);
+    }
+    double d = 0;
+    for(const P &p : ps) {
+        d = max(d, abs(p-c));
+    }
+    return make_pair(c, d);
+} // }}}
+
 struct circle/*{{{*/
 {
   P o;
